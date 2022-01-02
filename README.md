@@ -1,4 +1,4 @@
 
 # Battleship
 
-Single player Battleship gameto learn react native.
+Single player Battleship game to learn React Native.
