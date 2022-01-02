@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
 import Cell from './cell';
 import { Col, Row, Grid } from "react-native-easy-grid";
 
-const boardRow = (rowVals, cols, row) => {
+const boardRow = (rowVals, hideBoats, cols, row, handlePress) => {
 
   let colOutputs = [];
 
@@ -23,7 +23,7 @@ const boardRow = (rowVals, cols, row) => {
       style={{
       }}
     >
-      <Cell val={val} borderStyles={borderStyles} />
+      <Cell row={row} col={i} val={val} borderStyles={borderStyles} hideBoats={hideBoats} handlePress={handlePress} />
     </Col>);
   }
 
@@ -37,7 +37,7 @@ const boardRow = (rowVals, cols, row) => {
 
 
 
-const Board = ({ board }) => {
+const Board = ({ board, hideBoats, handlePress }) => {
 
   let rows = board.length, cols = board[0].length;
 
@@ -46,7 +46,7 @@ const Board = ({ board }) => {
   let rowVals = [0, 1, 1, 0, 0, 0];
 
   for ( let i = 0; i < rows; i++ ) {
-    rowOutputs.push(boardRow(board[i], cols, i));
+    rowOutputs.push(boardRow(board[i], hideBoats, cols, i, handlePress));
   }
 
   return <>

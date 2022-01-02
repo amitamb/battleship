@@ -1,13 +1,44 @@
 import usePlayer from '../hooks/usePlayer';
-import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
+import { Button, StyleSheet, Text, View, TouchableHighlight } from 'react-native';
 import Board from './board';
+import { getRandomInt } from '../support/commonHelpers';
 
 const Main = () => {
 
-  const [ opponentBoard ] = usePlayer(7, 7, [1]);
-  const [ playerBoard ] = usePlayer(7, 7, [1]);
+  const boats = [1, 2, 3, 4];
+  const SIZE = 7;
 
-  console.table(opponentBoard);
+  const [ opponentBoard, opponentRevealCell, opponentUnrevealedCells, resetOpponent ] = usePlayer(SIZE, SIZE, boats);
+  const [ playerBoard, playerRevealCell, playerUnrevealedCells, resetPlayer ] = usePlayer(SIZE, SIZE, boats);
+
+  const handlePress = (row, col) => {
+    playerRevealCell(row, col);
+
+    if ( opponentUnrevealedCells > 0 ) {
+      let foundEmptyCell = false;
+      let tries;
+      for ( tries = 0; tries < 100 && !foundEmptyCell ; tries++) {
+
+        foundEmptyCell = opponentRevealCell(getRandomInt(SIZE), getRandomInt(SIZE));
+
+      }
+
+      if ( tries == 100 ) {
+        console.error("Something wrong with the logic!");
+      }
+    }
+  };
+
+  let opponentHasWon = (opponentUnrevealedCells == 0);
+  let playerHasWon = (playerUnrevealedCells == 0);
+  let gameEnded = opponentHasWon || playerHasWon;
+
+  const restartGame = () => {
+
+    resetOpponent();
+    resetPlayer();
+
+  };
 
   return (
     <>
@@ -50,11 +81,14 @@ const Main = () => {
 
               <Text style={{
                 fontSize: 20,
-                paddingBottom: 20
+                paddingTop: 10,
+                paddingBottom: 10,
+                color: opponentHasWon ? "green" : null
               }}>
                 Opponent
+                {opponentHasWon && " Won ✓"}
               </Text>
-              <Board board={opponentBoard} />
+              <Board board={opponentBoard} hideBoats={false} handlePress={null} hasWon={opponentUnrevealedCells == 0} />
 
             </View>
 
@@ -65,13 +99,18 @@ const Main = () => {
 
               <Text style={{
                 fontSize: 20,
-                paddingBottom: 20
+                paddingTop: 10,
+                paddingBottom: 10,
+                color: playerHasWon ? "green" : null
               }}>
                 You
+                {playerHasWon && " Won ✓"}
               </Text>
-              <Board board={playerBoard} />
+              <Board board={playerBoard} hideBoats={true} handlePress={!gameEnded && handlePress} hasWon={playerUnrevealedCells == 0} />
 
             </View>
+
+            { gameEnded && <Button onPress={restartGame} title="Restart" /> }
 
           </View>
 
